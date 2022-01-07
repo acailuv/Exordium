@@ -1,0 +1,5 @@
+go.sum
+main
+node_modules/
+postgres_data/
+rabbitmq_data/

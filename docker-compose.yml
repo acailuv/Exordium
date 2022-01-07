@@ -1,0 +1,62 @@
+version: '3.4'
+services:
+  postgres:
+    image: postgres:11.3
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: your-secret-password   #change
+      POSTGRES_DB: project-db   #change
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres_data:/var/lib/postgresql/data
+  adminer:
+    image: adminer:latest
+    ports:
+      - 3645:8080
+    environment:
+      ADMINER_DEFAULT_SERVER: postgres
+  rabbitmq:
+    image: rabbitmq:3.6.1-management
+    ports:
+      - 5672:5672
+      - 15672:15672
+    volumes:
+      - ./rabbitmq_data/data/:/var/lib/rabbitmq/
+      - ./rabbitmq_data/log/:/var/log/rabbitmq/
+  api:
+    build: ./backend
+    volumes:
+      - ./backend:/backend
+    ports: 
+      - 8080:5000
+    depends_on:
+      - postgres
+      - rabbitmq
+    environment:
+      - WAIT_HOSTS=rabbitmq:5672,postgres:5432
+      - WAIT_HOSTS_TIMEOUT=300
+      - WAIT_SLEEP_INTERVAL=5
+      - WAIT_HOST_CONNECT_TIMEOUT=30
+  migrate:
+    image: migrate/migrate
+    volumes:
+        - ./backend/database/migrations:/migrations
+    command: ["-path", "/migrations", "-database",  "postgres://root:your-secret-password@postgres:5432/project-db?sslmode=disable", "up"]
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "curl", "-f", "postgres:5432"]
+      interval: 1s
+      timeout: 10s
+      retries: 10
+  frontend:
+    build:
+      context: ./frontend
+    environment:
+      ENV: development   # Choose one: development/production
+    volumes:
+      - ./frontend:/frontend
+    ports:
+      - 3000:3000
+      
