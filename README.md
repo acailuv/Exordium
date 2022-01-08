@@ -6,6 +6,7 @@ This repository includes all the tools you need to start your own industrial gra
 - Golang (Back End)
 - ReactTS (Front End)
 - RabbitMQ (Message Broker)
+- Redis (Cache)
 - PostgreSQL (Database)
 
 The front end uses `yarn` insteam of the regular `npm` for further dependability. Install [yarn](https://classic.yarnpkg.com/lang/en/docs/install/) first.
@@ -30,7 +31,3 @@ This section will cover basic usage of this repo.
     - `make run-migration-up database='postgres://root:your-secret-password@localhost:5432/app-db?sslmode=disable'` will run the migration (up).
     - `make run-migration-down database=''postgres://root:root@localhost:5432/app-db?sslmode=disable'` will run the migration (down).
     - **NOTE:** You might want to set your local database URL to your bash profile via `export` or something similar for extra convinience.
-
-## Status
-In development, to-do:
-- Redis
