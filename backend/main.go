@@ -8,8 +8,9 @@ import (
 	"main/api/healthcheck"
 	"main/api/user"
 	database "main/database/connection"
-	message_queue "main/message_queue/connection"
-	"main/message_queue/consumer"
+	rabbitmq "main/rabbitmq/connection"
+	"main/rabbitmq/consumer"
+	redis "main/redis/connection"
 
 	"github.com/gorilla/mux"
 )
@@ -27,6 +28,8 @@ func handleRequests(clients handlerClients) {
 	router.HandleFunc("/withdraw", clients.user.Withdraw).Methods(http.MethodPost, http.MethodOptions)
 	router.HandleFunc("/get-balance", clients.user.GetBalance).Methods(http.MethodPost, http.MethodOptions)
 	router.HandleFunc("/publish-user", clients.user.PublishUser).Methods(http.MethodPost, http.MethodOptions)
+	router.HandleFunc("/set-cache", clients.user.SetRedis).Methods(http.MethodPost, http.MethodOptions)
+	router.HandleFunc("/get-cache", clients.user.GetRedis).Methods(http.MethodPost, http.MethodOptions)
 
 	router.HandleFunc("/healthcheck", clients.healthcheck.StatusCheck).Methods(http.MethodGet, http.MethodOptions)
 
@@ -36,9 +39,10 @@ func handleRequests(clients handlerClients) {
 func main() {
 
 	db := database.NewConnection()
-	rabbitMQ := message_queue.NewConnection()
+	rabbitMQ := rabbitmq.NewConnection()
+	redis := redis.NewConnection()
 
-	userClient := user.NewUserClient(db, rabbitMQ)
+	userClient := user.NewUserClient(db, rabbitMQ, redis)
 	healthcheckClient := healthcheck.NewHealthcheckClient()
 
 	clients := handlerClients{

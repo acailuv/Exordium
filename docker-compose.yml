@@ -16,6 +16,18 @@ services:
       - 3645:8080
     environment:
       ADMINER_DEFAULT_SERVER: postgres
+  migrate:
+    image: migrate/migrate
+    volumes:
+      - ./backend/database/migrations:/migrations
+    command: ["-path", "/migrations", "-database",  "postgres://root:your-secret-password@postgres:5432/project-db?sslmode=disable", "up"]
+    depends_on:
+      - postgres
+    healthcheck:
+      test: ["CMD", "nc", "-vs", "postgres", "5432"]
+      interval: 1s
+      timeout: 10s
+      retries: 10
   rabbitmq:
     image: rabbitmq:3.6.1-management
     ports:
@@ -24,6 +36,20 @@ services:
     volumes:
       - ./rabbitmq_data/data/:/var/lib/rabbitmq/
       - ./rabbitmq_data/log/:/var/log/rabbitmq/
+  redis:
+    image: redis:6.2-alpine
+    restart: always
+    ports:
+      - 6379:6379
+    command: redis-server --save 20 1 --loglevel warning --requirepass your-redis-secret-password
+    volumes: 
+      - ./redis_data:/data
+  redis-commander:
+    image: rediscommander/redis-commander:latest
+    environment:
+    - REDIS_HOSTS=redis:redis:6379:0:your-redis-secret-password
+    ports:
+    - 8081:8081
   api:
     build: ./backend
     volumes:
@@ -34,22 +60,10 @@ services:
       - postgres
       - rabbitmq
     environment:
-      - WAIT_HOSTS=rabbitmq:5672,postgres:5432
+      - WAIT_HOSTS=rabbitmq:5672,postgres:5432,redis:6379
       - WAIT_HOSTS_TIMEOUT=300
       - WAIT_SLEEP_INTERVAL=5
       - WAIT_HOST_CONNECT_TIMEOUT=30
-  migrate:
-    image: migrate/migrate
-    volumes:
-        - ./backend/database/migrations:/migrations
-    command: ["-path", "/migrations", "-database",  "postgres://root:your-secret-password@postgres:5432/project-db?sslmode=disable", "up"]
-    depends_on:
-      - postgres
-    healthcheck:
-      test: ["CMD", "curl", "-f", "postgres:5432"]
-      interval: 1s
-      timeout: 10s
-      retries: 10
   frontend:
     build:
       context: ./frontend
