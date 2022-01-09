@@ -22,13 +22,10 @@ function fetchAndResolve(link: string, opt: RequestInit) {
     .then((response) => response.json())
     .then((data) => {
       if (!data.is_success) {
-        throw new Error(data.msg);
+        throw new Error(data.error);
       }
 
       return data;
-    })
-    .catch((error) => {
-      console.log(opt.method, link, error);
     });
 }
 
