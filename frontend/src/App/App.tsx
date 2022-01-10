@@ -1,7 +1,7 @@
 import React from 'react';
-import logo from './logo.svg';
+import logo from '../_assets/logo.svg';
 import './App.less';
-import { Get } from './Utils/ApiConnector';
+import { Get } from '../Utils/ApiConnector';
 import { Typography } from 'antd';
 
 function App() {
@@ -20,7 +20,7 @@ function App() {
         <p>
           {status}
         </p>
-        <p>Don't forget to add <Typography.Text code>@import '~antd/dist/antd.less';</Typography.Text> to the *.less file when making a new component.</p>
+        <p>Don't forget to add <Typography.Text code>@import '~antd/dist/antd.less';</Typography.Text> into the *.less file when making a new component.</p>
         <a
           className="App-link"
           href="https://reactjs.org"
