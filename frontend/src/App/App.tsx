@@ -13,6 +13,14 @@ ws.onmessage = (e) => {
   });
 }
 
+ws.onerror = () => {
+  notification['error']({
+    message: 'Oops..',
+    description:
+      'There was an error while establishing websocket.'
+  })
+}
+
 function App() {
   const [status, setStatus] = React.useState("");
 
