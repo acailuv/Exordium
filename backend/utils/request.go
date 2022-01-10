@@ -22,3 +22,11 @@ func SetupCORS(w *http.ResponseWriter, r *http.Request) {
 	(*w).Header().Add("Access-Control-Allow-Methods", "GET, PUT, POST, DELETE, HEAD, OPTIONS")
 	(*w).Header().Add("Access-Control-Allow-Headers", "*")
 }
+
+func RequestOriginUpgraderOverride(r *http.Request) bool {
+	if r.RemoteAddr == "http://localhost:3030" {
+		return true
+	}
+
+	return true
+}

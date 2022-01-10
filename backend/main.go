@@ -7,6 +7,7 @@ import (
 
 	"main/api/healthcheck"
 	"main/api/user"
+	"main/api/websocket"
 	database "main/database/connection"
 	rabbitmq "main/rabbitmq/connection"
 	"main/rabbitmq/consumer"
@@ -18,6 +19,7 @@ import (
 type handlerClients struct {
 	user        user.User
 	healthcheck healthcheck.Healthcheck
+	websocket   websocket.Websocket
 }
 
 func handleRequests(clients handlerClients) {
@@ -33,6 +35,8 @@ func handleRequests(clients handlerClients) {
 
 	router.HandleFunc("/healthcheck", clients.healthcheck.StatusCheck).Methods(http.MethodGet, http.MethodOptions)
 
+	router.HandleFunc("/websocket", clients.websocket.WebsocketHandler)
+
 	log.Fatal(http.ListenAndServe(":5000", router))
 }
 
@@ -44,10 +48,12 @@ func main() {
 
 	userClient := user.NewUserClient(db, rabbitMQ, redis)
 	healthcheckClient := healthcheck.NewHealthcheckClient()
+	websocketClient := websocket.NewWebsocketClient()
 
 	clients := handlerClients{
 		user:        userClient,
 		healthcheck: healthcheckClient,
+		websocket:   websocketClient,
 	}
 
 	consumer := consumer.NewConsumerClient(rabbitMQ)

@@ -7,9 +7,9 @@ import (
 )
 
 func GetCurrentCodePosition() string {
-	pc, file, line, ok := runtime.Caller(1)
+	_, file, line, ok := runtime.Caller(1)
 	if ok {
-		return fmt.Sprintf("(%s)-[Line %d]-[Function: %v]", file, line, runtime.FuncForPC(pc).Name())
+		return fmt.Sprintf("(%s) <Line %d>", file, line)
 	}
 	return "Unknown"
 }

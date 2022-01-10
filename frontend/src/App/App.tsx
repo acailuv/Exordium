@@ -2,10 +2,23 @@ import React from 'react';
 import logo from '../_assets/logo.svg';
 import './App.less';
 import { Get } from '../Utils/ApiConnector';
-import { Typography } from 'antd';
+import { Button, notification, Typography } from 'antd';
+
+const ws = new WebSocket('ws://localhost:8080/websocket');
+ws.onmessage = (e) => {
+  notification['success']({
+    message: 'Server Responded!',
+    description:
+      'The server said: ' + e.data,
+  });
+}
 
 function App() {
   const [status, setStatus] = React.useState("");
+
+  const handleServerPingButton = () => {
+    ws.send('Ping!');
+  }
 
   React.useEffect(() => {
     Get('http://localhost:8080/healthcheck')
@@ -20,7 +33,12 @@ function App() {
         <p>
           {status}
         </p>
-        <p>Don't forget to add <Typography.Text code>@import '~antd/dist/antd.less';</Typography.Text> into the *.less file when making a new component.</p>
+        <p>
+          Don't forget to add <Typography.Text code>@import '~antd/dist/antd.less';</Typography.Text> into the *.less file when making a new component.
+        </p>
+        <Button type="primary" onClick={handleServerPingButton}>
+          Ping the Server!
+        </Button>
         <a
           className="App-link"
           href="https://reactjs.org"
