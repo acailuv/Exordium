@@ -9,10 +9,10 @@ RUN npm install
 EXPOSE 3000
 
 CMD if [ ${ENV} = production ];        \
-	then                               \
+	then                               	 \
         npm install -g serve &&        \
         npm run build &&               \
         serve -s build;                \
-	else                               \
-	    npm start;                     \
+	else                                 \
+	    npm start;                     	 \
 	fi

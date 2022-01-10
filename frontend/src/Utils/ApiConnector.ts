@@ -7,7 +7,6 @@ const HEADERS = {
 const METHODS = {
   GET: "GET",
   POST: "POST",
-  DELETE: "DELETE",
 };
 
 const MODE = "cors";
