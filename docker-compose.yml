@@ -9,7 +9,7 @@ services:
     ports:
       - 5432:5432
     volumes:
-      - ./postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
   adminer:
     image: adminer:latest
     ports:
@@ -34,8 +34,8 @@ services:
       - 5672:5672
       - 15672:15672
     volumes:
-      - ./rabbitmq_data/data/:/var/lib/rabbitmq/
-      - ./rabbitmq_data/log/:/var/log/rabbitmq/
+      - rabbitmq_data:/var/lib/rabbitmq/
+      - rabbitmq_log:/var/log/rabbitmq/
   redis:
     image: redis:6.2-alpine
     restart: always
@@ -43,7 +43,7 @@ services:
       - 6379:6379
     command: redis-server --save 20 1 --loglevel warning --requirepass your-redis-secret-password
     volumes: 
-      - ./redis_data:/data
+      - redis_data:/data
   redis-commander:
     image: rediscommander/redis-commander:latest
     environment:
@@ -73,4 +73,9 @@ services:
       - ./frontend:/frontend
     ports:
       - 3000:3000
-      
+
+volumes:
+  postgres_data:
+  rabbitmq_data:
+  rabbitmq_log:
+  redis_data:
